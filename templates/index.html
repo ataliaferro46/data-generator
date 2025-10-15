@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Generator - Predictabar Demo</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    <!-- Predictabar Widget SDK -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Using a mock Predictabar component for demo -->
+    <script>
+        // Mock Predictabar component for demonstration
+        window.Predictabar = {
+            Predictabar: function(props) {
+                return React.createElement('div', {
+                    style: {
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        padding: '2rem',
+                        borderRadius: '12px',
+                        textAlign: 'center',
+                        margin: '1rem 0'
+                    }
+                }, [
+                    React.createElement('h3', { key: 'title' }, '📊 Predictabar Widget'),
+                    React.createElement('div', { key: 'progress', style: { fontSize: '2rem', margin: '1rem 0' } }, 
+                        `${Math.round(props.progress || 0)}%`
+                    ),
+                    React.createElement('div', { key: 'status', style: { fontSize: '1.2rem' } }, 
+                        `Status: ${props.status || 'idle'}`
+                    ),
+                    React.createElement('div', { key: 'time', style: { fontSize: '1rem', opacity: 0.8 } }, 
+                        `Est. Time: ${props.estimatedTime ? Math.round(props.estimatedTime) + 's' : '--'}`
+                    )
+                ]);
+            }
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎲 Data Generator</h1>
+            <p>with Predictabar Time Estimation</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>Demo Controls</h2>
+                <button id="startBtn" class="btn-primary">Start Generation</button>
+                <button id="resetBtn" class="btn-secondary" style="display: none;">Reset</button>
+            </div>
+
+            <!-- Predictabar Widget Container -->
+            <div class="card widget-container">
+                <h2>📊 Progress Tracker</h2>
+                <div id="predictabar-widget">
+                    <!-- Predictabar React component will be rendered here -->
+                </div>
+                
+                <!-- Fallback progress display -->
+                <div id="fallback-progress" style="display: none;">
+                    <div class="progress-display">
+                        <div class="stat-card">
+                            <div class="stat-value" id="progress">0%</div>
+                            <div class="stat-label">Progress</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="remaining">--</div>
+                            <div class="stat-label">Time Remaining</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="elapsed">0s</div>
+                            <div class="stat-label">Elapsed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                        <div class="progress-bar-text" id="progressText">Ready to start</div>
+                    </div>
+
+                    <div class="status-message" id="statusMessage">
+                        Click "Start Generation" to begin
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📝 Integration Instructions</h2>
+                <div class="instructions">
+                    <p>To integrate the Predictabar widget from <a href="https://test.predictabar.com/widget" target="_blank">test.predictabar.com/widget</a>:</p>
+                    <ol>
+                        <li>Include the Predictabar SDK script in your HTML</li>
+                        <li>Create a container div for the widget</li>
+                        <li>Initialize the widget with your configuration</li>
+                        <li>Update the widget with progress data</li>
+                    </ol>
+                    <pre><code>&lt;script src="https://test.predictabar.com/widget.js"&gt;&lt;/script&gt;
+&lt;div id="predictabar-widget"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  // Initialize Predictabar
+  Predictabar.init({
+    container: '#predictabar-widget',
+    theme: 'modern'
+  });
+  
+  // Update with progress
+  Predictabar.update({
+    progress: 45,
+    estimatedTime: 120
+  });
+&lt;/script&gt;</code></pre>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Built with Flask | Powered by <a href="https://test.predictabar.com/widget" target="_blank">Predictabar</a></p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
+
