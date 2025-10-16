@@ -7,7 +7,7 @@
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "axios": "^1.6.0",
-    "@predictabar/react": "latest"
+    "@predictabar/react-widget": "latest"
   },
   "scripts": {
     "start": "react-scripts start",

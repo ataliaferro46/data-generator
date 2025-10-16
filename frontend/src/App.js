@@ -1,69 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import './App.css';
 import PredictabarWidget from './components/PredictabarWidget';
-import ConfigForm from './components/ConfigForm';
-import StatusDisplay from './components/StatusDisplay';
 
 function App() {
-  const [jobId, setJobId] = useState(null);
-  const [jobStatus, setJobStatus] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState(null);
 
-  // Poll for job status when a job is active
-  useEffect(() => {
-    if (!jobId || !isGenerating) return;
-
-    const pollInterval = setInterval(async () => {
-      try {
-        const response = await axios.get(`/api/status/${jobId}`);
-        if (response.data.success) {
-          const status = response.data.status;
-          setJobStatus(status);
-
-          // Stop polling if job is complete or failed
-          if (status.status === 'completed' || status.status === 'failed') {
-            setIsGenerating(false);
-            clearInterval(pollInterval);
-          }
-        }
-      } catch (err) {
-        console.error('Error polling job status:', err);
-        setError('Failed to get job status');
-      }
-    }, 1000); // Poll every second
-
-    return () => clearInterval(pollInterval);
-  }, [jobId, isGenerating]);
-
-  const handleStartGeneration = async (config) => {
+  const handleStartGeneration = async () => {
     try {
       setError(null);
       setIsGenerating(true);
       
-      const response = await axios.post('/api/generate', {
-        config: config
-      });
-
+      // Call Flask backend to start generation
+      const response = await axios.post('http://localhost:5000/api/start');
+      
       if (response.data.success) {
-        setJobId(response.data.job_id);
-        setJobStatus(response.data.status);
+        console.log('✅ Generation started:', response.data.run_id);
+        // The PredictaBar widget will automatically show progress from your account
       } else {
-        throw new Error(response.data.error || 'Failed to start generation');
+        throw new Error('Failed to start generation');
       }
     } catch (err) {
       console.error('Error starting generation:', err);
-      setError(err.response?.data?.error || err.message || 'Failed to start generation');
+      setError('Failed to start generation: ' + err.message);
       setIsGenerating(false);
     }
-  };
-
-  const handleReset = () => {
-    setJobId(null);
-    setJobStatus(null);
-    setIsGenerating(false);
-    setError(null);
   };
 
   return (
@@ -81,30 +43,26 @@ function App() {
           </div>
         )}
 
-        {!isGenerating && !jobStatus ? (
-          <ConfigForm onSubmit={handleStartGeneration} />
-        ) : (
-          <div className="generation-container">
-            <PredictabarWidget 
-              jobStatus={jobStatus}
-              isGenerating={isGenerating}
-            />
+        <div className="generation-container">
+          {/* PredictaBar widget - this is the real UI from PredictaBar */}
+          <PredictabarWidget />
+          
+          {/* Simple start button */}
+          <div className="controls">
+            <button 
+              className="start-button"
+              onClick={handleStartGeneration}
+              disabled={isGenerating}
+            >
+              {isGenerating ? 'Generating...' : 'Start Generation'}
+            </button>
             
-            <StatusDisplay 
-              jobStatus={jobStatus}
-              isGenerating={isGenerating}
-            />
-
-            {jobStatus && (jobStatus.status === 'completed' || jobStatus.status === 'failed') && (
-              <button 
-                className="reset-button"
-                onClick={handleReset}
-              >
-                Start New Generation
-              </button>
-            )}
+            <p className="instruction">
+              Click "Start Generation" to begin a 30-second data generation job.
+              The progress bar above will show real-time updates from PredictaBar.
+            </p>
           </div>
-        )}
+        </div>
       </main>
 
       <footer className="App-footer">

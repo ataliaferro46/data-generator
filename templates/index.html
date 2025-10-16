@@ -10,34 +10,31 @@
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Using a mock Predictabar component for demo -->
+    
+    <!-- Real PredictaBar Widget SDK -->
+    <script src="https://test.predictabar.com/widget.js"></script>
+    
     <script>
-        // Mock Predictabar component for demonstration
-        window.Predictabar = {
-            Predictabar: function(props) {
-                return React.createElement('div', {
-                    style: {
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: 'white',
-                        padding: '2rem',
-                        borderRadius: '12px',
-                        textAlign: 'center',
-                        margin: '1rem 0'
-                    }
-                }, [
-                    React.createElement('h3', { key: 'title' }, '📊 Predictabar Widget'),
-                    React.createElement('div', { key: 'progress', style: { fontSize: '2rem', margin: '1rem 0' } }, 
-                        `${Math.round(props.progress || 0)}%`
-                    ),
-                    React.createElement('div', { key: 'status', style: { fontSize: '1.2rem' } }, 
-                        `Status: ${props.status || 'idle'}`
-                    ),
-                    React.createElement('div', { key: 'time', style: { fontSize: '1rem', opacity: 0.8 } }, 
-                        `Est. Time: ${props.estimatedTime ? Math.round(props.estimatedTime) + 's' : '--'}`
-                    )
-                ]);
-            }
+        // Configure PredictaBar widget
+        window.PredictabarConfig = {
+            bar_id: '{{ predictabar_bar_id }}',
+            api_key: '{{ predictabar_api_key }}'
         };
+        
+        // Initialize PredictaBar when SDK loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.Predictabar && window.PredictabarConfig) {
+                try {
+                    window.Predictabar.configure({
+                        bar_id: window.PredictabarConfig.bar_id,
+                        api_key: window.PredictabarConfig.api_key
+                    });
+                    console.log('✅ PredictaBar configured successfully');
+                } catch (error) {
+                    console.error('❌ PredictaBar configuration failed:', error);
+                }
+            }
+        });
     </script>
 </head>
 <body>
